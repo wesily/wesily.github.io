@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="1234567891011121314151617181920212223242526272829303132/** * Desc: *      1. 启动该main方法后，程序可能会一直执行下去，一直输入43，因为该线程永远看不到ready的值 *      2. 可能输出为0，直接退出。因为读线程可能看到了写入ready的值，但是却没有看到之后写入的number的值 *      第二种情况">
+<meta name="keywords" content="多线程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="重排序和失效数据">
+<meta property="og:url" content="http://yoursite.com/2019/08/03/重排序和失效数据/index.html">
+<meta property="og:site_name" content="Wesily">
+<meta property="og:description" content="1234567891011121314151617181920212223242526272829303132/** * Desc: *      1. 启动该main方法后，程序可能会一直执行下去，一直输入43，因为该线程永远看不到ready的值 *      2. 可能输出为0，直接退出。因为读线程可能看到了写入ready的值，但是却没有看到之后写入的number的值 *      第二种情况">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-08-03T07:16:05.076Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="重排序和失效数据">
+<meta name="twitter:description" content="1234567891011121314151617181920212223242526272829303132/** * Desc: *      1. 启动该main方法后，程序可能会一直执行下去，一直输入43，因为该线程永远看不到ready的值 *      2. 可能输出为0，直接退出。因为读线程可能看到了写入ready的值，但是却没有看到之后写入的number的值 *      第二种情况">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>重排序和失效数据</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- persian styles -->
+    
+      <link rel="stylesheet" href="/css/rtl.css">
+    
+    <!-- rss -->
+    
+    
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/projects_url">Projects</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" href="/2019/08/03/hello-world/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/08/03/重排序和失效数据/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/08/03/重排序和失效数据/&text=重排序和失效数据"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/08/03/重排序和失效数据/&title=重排序和失效数据"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/08/03/重排序和失效数据/&is_video=false&description=重排序和失效数据"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=重排序和失效数据&body=Check out this article: http://yoursite.com/2019/08/03/重排序和失效数据/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/08/03/重排序和失效数据/&title=重排序和失效数据"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/08/03/重排序和失效数据/&title=重排序和失效数据"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/08/03/重排序和失效数据/&title=重排序和失效数据"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/08/03/重排序和失效数据/&title=重排序和失效数据"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/08/03/重排序和失效数据/&name=重排序和失效数据&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        重排序和失效数据
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">wesily</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-08-03T07:08:00.000Z" itemprop="datePublished">2019-08-03</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/java/">java</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link" href="/tags/多线程/">多线程</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Desc:</span></span><br><span class="line"><span class="comment"> *      1. 启动该main方法后，程序可能会一直执行下去，一直输入43，因为该线程永远看不到ready的值</span></span><br><span class="line"><span class="comment"> *      2. 可能输出为0，直接退出。因为读线程可能看到了写入ready的值，但是却没有看到之后写入的number的值</span></span><br><span class="line"><span class="comment"> *      第二种情况被称为重排序，只要在某个线程中无法检测到重排序情况，那么就无法确保程序中的操作将</span></span><br><span class="line"><span class="comment"> *      按照程序中指定的顺序来执行，当主线程首先写入number，然后在没有同步的情况下写入ready，那么</span></span><br><span class="line"><span class="comment"> *      线程看到的顺序将可能与写入的顺序相反。</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;</span></span><br><span class="line"><span class="comment"> * Created by wangjialei.</span></span><br><span class="line"><span class="comment"> * 2019/8/3</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NoVisibility</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> ready;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> number;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ReaderThread</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">while</span> (ready)&#123;</span><br><span class="line">                Thread.yield();</span><br><span class="line">                System.out.println(number);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        <span class="keyword">new</span> ReaderThread().start();</span><br><span class="line">        ready = <span class="keyword">true</span>;</span><br><span class="line">        number = <span class="number">43</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<pre><code>失效数据
+    NoVisibility展示了在缺乏同步的程序中可能产生错误结果的一种情况，失效数据。当读线程查看ready变量时，可能会得到一个已经失效的值。除非在每次访问变量时都使用同步，否则很可能出现该状况。更糟糕的是，失效值可能不会同时出现：一个线程可能获取某个变量的最新值，而获得另一个变量的失效值。
+    如果对象的引用(比如链表中的指针)失效，那么情况会更复杂，失效数据可能导致一些令人困惑的故障，如意料之外的异常、被破坏的数据结构、不精确的计算以及永无止境的循环等。</code></pre><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Desc:</span></span><br><span class="line"><span class="comment"> *      MutableInteger是线程不安全的，因为get和set都是在没有同步的情况下访问value的，与其他问题相比，失效值问题更容易出现，如果某个线程调用了set，而另一个正在调用get的线程</span></span><br><span class="line"><span class="comment"> *      可能会看到更新后的value值，也可能看不到。</span></span><br><span class="line"><span class="comment"> *      而SynchronizedInteger在对value变量添加<span class="doctag">@GuardedBy</span>的注解之后，同时对get和set方法进行同步。</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;</span></span><br><span class="line"><span class="comment"> * Created by wangjialei.</span></span><br><span class="line"><span class="comment"> * 2019/8/3</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@NotThreadSafe</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MutableInteger</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> value;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> value;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setValue</span><span class="params">(<span class="keyword">int</span> value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.value = value;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@ThreadSafe</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">SynchronizedInteger</span></span>&#123;</span><br><span class="line">        <span class="meta">@GuardedBy</span>(<span class="string">"this"</span>)</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> value;</span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">int</span> <span class="title">getValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> value;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">setValue</span><span class="params">(<span class="keyword">int</span> value)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.value = value;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<pre><code>非原子的64位操作
+    最低安全性适用于绝大多数变量，但是存在一个例外：非volatile类型的64位数值变量(double和long)。在java内存模型要求中，变量的读取和写入操作都必须是原子操作，但是对于非volatile类型的long和double变量，jvm允许通过64位的读操作或写操作分解为两个32位的操作。当读取一个非volatile的long类型变量时，如果对该变量的读操作和写操作在不同的线程中执行，那么很可能会读取到某个值的高32位和另一个值的低32位。(在编写java虚拟机规范时，许多驻留处理器架构还不能有效地提供64位数值的原子操作)
+    因此，即使不考虑失效数据问题，在多线程程序中使用共享且可变的long和double等类型的变量也是不安全的。除非用关键字volatile来声明，或用锁保护起来。
+
+加锁与可见性
+    内置锁可以用于确保某个线程以一种可预测的方式来查看另一个线程的执行结果。加锁的含义不仅仅局限于互斥行为，还包括内存可见性。为了确保所有线程都能看到共享变量的最新值，所有执行读操作或者写操作的线程都必须在同一个锁上同步。
+
+volatile变量
+    volatile是java提供的一种稍弱的同步机制，用来确保将变量的更新操作通知到其他线程。当把变量声明为volatile类型后，编译器与运行时都会注意到这个变量是共享的，因此不会将该变量上的操作与其他内存操作一起进行重排序。
+    volatile变量不会被缓存在寄存器或者对其他处理器不可见的地方，因此读取volatile变量的时候总会返回最新写入的值。
+    理解volatile的一种有效方法是，将他们的行为想象成SynchronizedInteger的类似行为，并将volatile变量的读取分别替换为get和set方法。
+    虽然这种类比不太正确，SynchronizedInteger在内存可见性上是要强于volatile的，同时，在大多数处理器架构上面，读取volatile变量的开销只比读取非volatile变量的开销略微高一些。然而在访问volatile变量时是不会执行加锁操作的，因此也不会造成线程阻塞。
+    volatile变量对可见性的影响比volatile变量本身更为重要。从内存可见性角度来看，写入volatile变量相当于退出同步代码块，而读取volatile变量就相当于进入同步代码块。然而不建议通过过度依赖volatile变量提供的可见性。如果在代码中依赖volatile来控制状态的可见性，通常比使用锁的代码更脆弱。仅当volatile变量能简化代码的实现以及对同步策略验证时，才应该使用它们。如果在验证正确时需要对可见性进行复杂的判断，就不要使用volatile变量。
+
+    它的正确使用方式包括：
+      ·确保它们自身状态的可见性
+      ·确保它们所引用对象的状态的可见性
+      ·以及标识一些重要的程序生命周期时间的发生(如初始化或关闭)
+
+    volatile语义不足以确保递增操作(count++)的原子性，除非能确保只有一个线程对变量执行写操作。原子变量提供了“读-改-写”的原子操作，并且常常用做一种“更好的volatile变量”[AtomicReference和IntPair等]。
+    加锁机制既可以确保可见性又可以确保原子性，而volatile变量只能确保可见性。
+
+当前仅当满足以下条件时，才应该使用volatile变量：
+    ·对变量的写操作不依赖变量的当前值，或者你能确保只有单个线程更新变量的值；
+    ·该变量不会与其他状态变量一起纳入不变性条件中
+    ·在访问变量时不需要加锁</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">volatile boolean asleep;</span><br><span class="line">...</span><br><span class="line">while(!asleep)</span><br><span class="line">    countSomeSheep();</span><br></pre></td></tr></table></figure>
+
+<pre><code>对于服务器应用程序，无论在开发阶段还是在测试阶段，当启动jvm时一定都要指定-server命令行选项。
+server模式的jvm将比client模式的jvm进行更多的优化，例如将循环中未被修改的变量提升到循环外部，因此在开发环境中能运行正确的代码，可能会在部署环境中运行失败。
+
+例如上述代码，如果asleep未被声明为volatile类型，那么server模式的jvm会将asleep的判断条件提升到循环体外部，这将导致一个无限循环，但client模式的jvm不会这么做。</code></pre><p>|有问题反馈<br>在使用中有任何问题，欢迎反馈给我，可以用以下联系方式跟我交流</p>
+<pre><code>邮件：saysocool@foxmail.com
+  QQ: 237011552</code></pre><p>  weibo: <a href="http://weibo.com/saysocool" target="_blank" rel="noopener">@婷婷的三胖子</a></p>
+<pre><code>感激
+感谢以下的书籍资料
+| [Java并发编程实战·机械工业出版社](https://book.douban.com/subject/10484692/) </code></pre>
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/projects_url">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/08/03/重排序和失效数据/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/08/03/重排序和失效数据/&text=重排序和失效数据"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/08/03/重排序和失效数据/&title=重排序和失效数据"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/08/03/重排序和失效数据/&is_video=false&description=重排序和失效数据"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=重排序和失效数据&body=Check out this article: http://yoursite.com/2019/08/03/重排序和失效数据/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/08/03/重排序和失效数据/&title=重排序和失效数据"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/08/03/重排序和失效数据/&title=重排序和失效数据"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/08/03/重排序和失效数据/&title=重排序和失效数据"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/08/03/重排序和失效数据/&title=重排序和失效数据"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/08/03/重排序和失效数据/&name=重排序和失效数据&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2019 saysocool
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/projects_url">Projects</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+    <!-- jquery -->
+<script src="/lib/jquery/jquery.min.js"></script>
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>
